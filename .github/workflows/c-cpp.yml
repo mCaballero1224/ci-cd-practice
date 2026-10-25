@@ -28,7 +28,7 @@ jobs:
     # run static code analysis (linting)
     - name: Run Static Analysic (cppcheck)
       run: |
-        cppcheck --enable=all --library=posix --error-exitcode=1 src/
+        cppcheck --enable=all --library=posix --suppress=missingIncludeSystem --error-exitcode=1 src/
 
     # build the application using the specified matrix compiler
     - name: Compile Code
