@@ -33,11 +33,13 @@ jobs:
     # build the application using the specified matrix compiler
     - name: Compile Code
       run: |
+        make clean
         make CC=${{ matrix.compiler }}
 
     # execute unit test suite
     - name: Run Tests
       run: |
+        make clean
         make test
 
     # memory analysis with valgrind
