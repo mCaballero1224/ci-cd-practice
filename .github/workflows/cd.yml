@@ -1,0 +1,41 @@
+name: Continuous Deployment
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Triggers only when pushing version tags
+
+jobs:
+  release-binaries:
+    name: Build & Release Artifacts
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clangd]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v7
+
+    - name: Install Build Essentials
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+    - name: Build Production Binaries
+      run: |
+          make clean
+          make CC=${{ matrix.compiler }}
+
+    # Rename the output binary so files don't overwrite each other in the release
+    - name: Rename Binary for Matrix Artifacts
+      run: |
+          mv build/app build/app-linux-${{ matrix.compiler }}
+
+    # Uploads the compiled binaries to the GitHub Release page automatically
+    - name: Upload Binaries to Release
+      uses: softprops/action-gh-release@v2
+      with:
+          files: build/app-linux-${{ matrix.compiler }}
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
